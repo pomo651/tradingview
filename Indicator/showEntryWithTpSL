@@ -1,0 +1,38 @@
+//@version=5
+indicator("Trade Visualization", overlay=true)
+
+// Inputs
+entryYear = 2024
+entryMonth = 02
+entryDay = 23
+entryHour = 08
+entryMinute = 35
+stopLoss = 5093
+riskRewardRatio = 2
+
+// Calculate entry timestamp
+entryTime = timestamp(entryYear, entryMonth, entryDay, entryHour, entryMinute)
+
+// Check if the current bar is within the 10-candle range
+isInRange() =>
+    time >= entryTime and time <= entryTime + 10 * 5 * 60 // 10 candles, each 5 minutes
+
+// Calculate take profit level
+takeProfit = close + (close - stopLoss) * riskRewardRatio
+
+// Plotting entry, stop loss, and take profit
+bgcolor(isInRange() ? color.new(color.green, 90) : na, transp=90)
+plotshape(isInRange() ? close : na, color=color.green, style=shape.circle, size=size.small, title="Entry")
+
+var line entryLine = na
+var line stopLossLine = na
+var line takeProfitLine = na
+
+if (isInRange())
+    entryLine := line.new(bar_index, close, bar_index + 10, close, width=2, color=color.green)
+
+if (isInRange())
+    stopLossLine := line.new(bar_index, stopLoss, bar_index + 10, stopLoss, width=2, color=color.red)
+
+if (isInRange())
+    takeProfitLine := line.new(bar_index, takeProfit, bar_index + 10, takeProfit, width=2, color=color.blue)
